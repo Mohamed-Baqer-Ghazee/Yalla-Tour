@@ -4,6 +4,7 @@ using Yalla_Tour.Data;
 using Yalla_Tour.DTO;
 using Yalla_Tour.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace Yalla_Tour.Controllers
 {
@@ -24,14 +25,16 @@ namespace Yalla_Tour.Controllers
             return _context.Location.ToList();
         }
         [HttpPost]
-        public async Task<IActionResult> AddLocation( LocationDTO locationDTO)
+        public async Task<IActionResult> AddLocation([FromBody] LocationDTO locationDTO)
         {
             if(locationDTO == null)
                 return NoContent();
 
-            var Location = new Location
+            
+             var Location = new Location
             {
                 Name = locationDTO.Name ?? "NA",
+                ImgUrl = locationDTO.ImgUrl ?? "NA",
                 Description = locationDTO.Description ?? "NA",
                 Address = locationDTO.Address ?? "NA",
                 Type = locationDTO.Type ?? "NA",
@@ -42,6 +45,7 @@ namespace Yalla_Tour.Controllers
                 RestaurantId = locationDTO.RestaurantId,
                 TourGuideId = locationDTO.TourGuideId
             };
+            
 
             //var Location = _mapper.Map<LocationDTO, Location>(locationDTO);
 
@@ -97,6 +101,64 @@ namespace Yalla_Tour.Controllers
 
 
             return NotFound();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult>  EditLocation([FromBody] Location location, int? id)
+        {
+            if (location == null) { return NoContent(); }
+
+            var locationInfo = await _context.Location.FirstOrDefaultAsync(s => s.Id == id);
+
+            if (locationInfo == null) { return NoContent(); }
+
+
+
+            try
+            {
+                locationInfo.Name = location.Name;
+                locationInfo.Description = location.Description;
+                locationInfo.Address = location.Address;
+                locationInfo.Type = location.Type;
+                locationInfo.OTime = location.OTime;
+                locationInfo.CTime = location.CTime;
+                locationInfo.CTime = location.CTime;
+                locationInfo.EnteranceFee = location.EnteranceFee;
+                locationInfo.Rules = location.Rules;
+                locationInfo.RestaurantId = location.RestaurantId;
+                locationInfo.TourGuideId = location.TourGuideId;
+
+                _context.Location.Update(locationInfo);
+                await _context.SaveChangesAsync();
+
+                return Ok(_context.Location.FirstOrDefault(s => s.Id == id));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteLocation(int? id)
+        {
+            if (id == null) { return NoContent(); }
+            var locationInfo = _context.Location.FirstOrDefault(s => s.Id == id);
+
+            if (locationInfo == null) { return NoContent(); }
+
+            try
+            {
+                _context.Location.Remove(locationInfo);
+                _context.SaveChanges();
+
+                return Ok(_context.Location.ToList());
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

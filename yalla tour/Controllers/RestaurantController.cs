@@ -24,7 +24,7 @@ namespace Yalla_Tour.Controllers
             return _context.Restaurant.ToList();
         }
         [HttpPost]
-        public async Task<IActionResult> AddRestaurant(RestaurantDTO RestaurantDTO)
+        public async Task<IActionResult> AddRestaurant([FromBody] RestaurantDTO RestaurantDTO)
         {
             if (RestaurantDTO == null)
                 return NoContent();
@@ -32,11 +32,9 @@ namespace Yalla_Tour.Controllers
             var Restaurant = new Restaurant
             {
                 Name = RestaurantDTO.Name ?? "NA",
+                ImgUrl = RestaurantDTO.ImgUrl?? "NA",
                 Description = RestaurantDTO.Description ?? "NA",
                 Address = RestaurantDTO.Address ?? "NA",
-                Type = RestaurantDTO.Type ?? "NA",
-                ImagesUrl = RestaurantDTO.ImagesUrl ?? "NA",
-                Menu = RestaurantDTO.Menu ?? "NA"
             };
 
             //var Restaurant = _mapper.Map<RestaurantDTO, Restaurant>(RestaurantDTO);

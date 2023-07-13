@@ -9,6 +9,7 @@ namespace Yalla_Tour.Models
         public int Id { get; set; }
         [Required]
         public string? Name { get; set; }
+        public string? ImgUrl { get; set; }
         public string? Description { get; set; }
         [Required]
         public string? Address { get; set; }
